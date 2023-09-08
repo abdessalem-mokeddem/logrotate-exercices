@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Ce script doit être exécuté en tant que root."
+  exit 1
+fi
+
+# Répertoire de sauvegarde
+backup_dir="/var/backup"
+
+# Boucle à travers tous les utilisateurs du système
+for user_home in /home/*; do
+  # Récupérez le nom d'utilisateur à partir du chemin du répertoire de l'utilisateur
+  username=$(basename "$user_home")
+
+  # Créez un nom de fichier pour la sauvegarde avec la date actuelle
+  backup_filename="${backup_dir}/${username}-fichiers-moins-7-jours-$(date +'%d-%b-%Y').tar.gz"
+
+  # Créez une archive tar.gz pour les fichiers créés il y a moins de 7 jours
+  find "$user_home" -type f -ctime -7 -print0 | tar czvf "$backup_filename" --null -T -
+
+  # Définissez les autorisations appropriées sur le fichier de sauvegarde
+  chown "$username" "$backup_filename"
+  chmod 600 "$backup_filename"
+done

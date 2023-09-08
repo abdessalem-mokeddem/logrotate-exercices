@@ -1,0 +1,22 @@
+#!/bin/bash
+
+
+if [ "$#" -ne 2 ]; then
+  echo "Usage: $0 date_debut date_fin"
+  exit 1
+fi
+date_debut="$1"
+date_fin="$2"
+
+
+backup_dir="/var/backup"
+
+
+function recuperer_donnees {
+  date_debut="$1"
+  date_fin="$2"
+  tar_filename="${backup_dir}/recuperation-$(date +'%d-%b-%Y').tar.gz"
+  find /chemin/vers/vos/donnees -type f -newermt "$date_debut" ! -newermt "$date_fin" -print0 | tar czvf "$tar_filename" --null -T -
+}
+
+recuperer_donnees "$date_debut" "$date_fin"

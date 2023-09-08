@@ -1,0 +1,12 @@
+/var/log/tshark.log {
+    size 1M
+    rotate 4
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 640 root root
+    postrotate
+        /usr/bin/killall -HUP tshark
+    endscript
+}
